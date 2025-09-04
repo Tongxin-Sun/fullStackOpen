@@ -1,33 +1,27 @@
 import { useState } from 'react'
 
-const StatisticRow = ({ text, value }) => {
-  if (text == 'good') return <tr><td>{text}</td><td>{value.good}</td></tr>
-  else if (text == 'neutral') return <tr><td>{text}</td><td>{value.neutral}</td></tr>
-  else if (text == 'bad') return <tr><td>{text}</td><td>{value.bad}</td></tr>
-  else if (text == 'all') return <tr><td>{text}</td><td>{value.good + value.neutral + value.bad}</td></tr>
-  else if (text == 'average') return <tr><td>{text}</td><td>{(value.good + value.neutral + value.bad) / 3}</td></tr>
-  else if (text == 'positive') return <tr><td>{text}</td><td>{value.good / (value.good + value.neutral + value.bad)}%</td></tr>
-}
+const StatisticRow = ({ text, value }) => <tr><td>{text}</td><td>{value}</td></tr>
 
 const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad
+  const average = (good - bad) / total
+  const positive = (100 * good) / total
 
-  if (good == 0 && neutral == 0 && bad == 0) {
+  if (all === 0) {
     return <p>No feedback given</p>
-  } else {
-    const value = { good: good, neutral: neutral, bad: bad }
-    return (
-      <table>
-        <tbody>
-          <StatisticRow text='good' value={value} />
-          <StatisticRow text='neutral' value={value} />
-          <StatisticRow text='bad' value={value} />
-          <StatisticRow text='all' value={value} />
-          <StatisticRow text='average' value={value} />
-          <StatisticRow text='positive' value={value} />
-        </tbody>
-      </table>
-    )
   }
+  return (
+    <table>
+      <tbody>
+        <StatisticRow text='good' value={godd} />
+        <StatisticRow text='neutral' value={neutral} />
+        <StatisticRow text='bad' value={bad} />
+        <StatisticRow text='all' value={all} />
+        <StatisticRow text='average' value={average} />
+        <StatisticRow text='positive' value={positive} />
+      </tbody>
+    </table>
+  )
 }
 
 const Button = ({ onClick, text }) => {
@@ -39,6 +33,7 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+
   return (
     <div>
       <h1>give feedback</h1>

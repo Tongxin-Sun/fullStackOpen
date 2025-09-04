@@ -24,7 +24,10 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
-  const [mostVotes, setMostVotes] = useState(0)
+
+  const mostVotes = () => {
+    return votes.indexOf(Math.max(...votes))
+  }
 
   return (
     <div>
@@ -35,7 +38,6 @@ const App = () => {
         onClick={() => {
           const copy = [...votes]
           copy[selected] += 1
-          setMostVotes(copy.indexOf(Math.max(...copy)))
           setVotes(copy)
         }}
       />
@@ -46,7 +48,7 @@ const App = () => {
         }
       />
       <h2>Anecdote with most votes</h2>
-      <Display anecdote={anecdotes[mostVotes]} votes={votes[mostVotes]} />
+      <Display anecdote={anecdotes[mostVotes()]} votes={votes[mostVotes()]} />
     </div>
   )
 }
