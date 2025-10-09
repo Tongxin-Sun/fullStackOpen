@@ -10,7 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [filter, setNewFilter] = useState('')
+  const [filter, setFilter] = useState('')
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState(true)
 
@@ -83,7 +83,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       {message && <Notification message={message} type={messageType} />}
-      <Filter filter={filter} onChange={(e) => setNewFilter(e.target.value)} />
+      <Filter filter={filter} onChange={(e) => setFilter(e.target.value)} />
       <h3>Add a new</h3>
       <PersonForm
         newName={newName}
