@@ -2,6 +2,17 @@
 
 I wrote this document while developing the countries project. My goal is to clarify my thought process and keep a record of the decisions I made along the way. It explains how the code flows, as well as how and why I approached different implementation details.
 
+> ***Note***
+> This project uses the `OpenWeatherMap API` for live weather data. 
+> Set a Vite env var `VITE_SOME_KEY` with your OpenWeather API key (e.g., add `VITE_SOME_KEY=your_key` to a `.env` file) so the Weather component can fetch data.
+>
+> Or use the following commands to run the app:
+> 
+>```bash
+> export VITE_SOME_KEY=54l41n3n4v41m34rv0 && npm run dev // For Linux/macOS Bash
+> ($env:VITE_SOME_KEY="54l41n3n4v41m34rv0") -and (npm run dev) // For Windows PowerShell
+> set "VITE_SOME_KEY=54l41n3n4v41m34rv0" && npm run dev // For Windows cmd.exe
+> ```
 ***
 
 The first time the page is rendered, `useEffect` will be called to fetch all the countries info from the base URL: https://studies.cs.helsinki.fi/restcountries/api/all. This `useEffect` will only be called once because the second parameter doesn't specify any variable.
