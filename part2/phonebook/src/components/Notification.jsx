@@ -1,30 +1,21 @@
-const Notification = ({ message, type }) => {
-    const baseStyle = {
-        borderRadius: '5px',
-        padding: '0.5em',
+const Notification = ({ notification }) => {
+    const { message, isError } = notification
+
+    if (!message) {
+        return null
+    }
+
+    const style = {
+        color: isError ? 'red' : 'green',
         background: 'lightgrey',
-        marginBottom: '0.83em'
+        fontSize: 20,
+        borderStyle: 'solid',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
     }
 
-    const successfulOperationStyle = {
-        ...baseStyle,
-        border: '3px solid green',
-        color: 'green'
-    }
-
-    const unsuccessfulOperationStyle = {
-        ...baseStyle,
-        border: '3px solid red',
-        color: 'red'
-    }
-
-    const notificationStyle = type ? successfulOperationStyle : unsuccessfulOperationStyle
-
-    return (
-        <div style={notificationStyle}>
-            {message}
-        </div>
-    )
+    return (<div style={style}>{message}</div>)
 }
 
 export default Notification
