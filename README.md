@@ -1,9 +1,12 @@
 # Projects
 
 ## Phone Book
-[![View Source](https://img.shields.io/badge/Code-GitHub-blue)](https://github.com/Tongxin-Sun/fullStackOpen/tree/main/part2/phonebook)
 
-### Backend:
+[![View Source](https://img.shields.io/badge/Live_View-orange)](https://phonebook-5ny2.onrender.com/info) [![View Source](https://img.shields.io/badge/Frontend-GitHub-blue)](https://github.com/Tongxin-Sun/fullStackOpen/tree/main/part2/phonebook) [![View Source](https://img.shields.io/badge/Backend-GitHub-blue)](https://github.com/Tongxin-Sun/fullStackOpen/tree/main/part3/phonebookBackend)
+
+
+
+### APIs:
 1. Get all contacts: `http://localhost:3001/api/persons`
 
 2. Get info about the time that the request was received and how many entries are in the phonebook at the time of processing the request: `http://localhost:3001/info` that shows 
