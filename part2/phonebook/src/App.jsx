@@ -50,7 +50,7 @@ const App = () => {
           notifyWith(`Phonenumber of ${updatedPerson.name} updated!`)
           clearForm()
         })
-        .catch(() => {
+        .catch((e) => {
           notifyWith(`Information of ${existingPerson.name} has already been removed from server`, true)
           clearForm()
           setPersons(persons.filter(person => person.id !== existingPerson.id))
