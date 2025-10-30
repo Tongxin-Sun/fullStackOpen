@@ -1,5 +1,7 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 morgan.token('body', (req) => JSON.stringify(req.body))
 
@@ -43,18 +45,11 @@ const bodyRequiredFieldErrorHandler = (requiredFields, body, response) => {
 }
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => response.json(persons))
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    Person.findById(request.params.id).then(person => response.json(person))
 
 })
 
@@ -78,22 +73,21 @@ app.post('/api/persons', (request, response) => {
 
     bodyRequiredFieldErrorHandler(['name', 'number'], body, response)
 
-    if (persons.find(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'name already exists'
-        })
-    }
-
-    const person = {
-        id: String(Math.floor(Math.random() * 1000000000)),
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
-    persons = persons.concat(person)
-    response.json(person)
+    })
+
+    person.save().then(savedPerson => response.json(savedPerson))
 })
 
-const PORT = process.env.PORT || 3001
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
