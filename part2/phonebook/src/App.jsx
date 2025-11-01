@@ -13,13 +13,11 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [notification, setNotification] = useState({ message: null })
 
-  const personsToShow = persons.filter((person) =>
-    person.name.toLowerCase().includes(filter.toLowerCase())
-  )
+  const personsToShow = persons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
 
   const addPerson = (e) => {
     e.preventDefault()
-    const existingPerson = persons.find((person) => person.name === newName)
+    const existingPerson = persons.find((person) => person.name === newName.trim())
 
     if (existingPerson) {
       updatePerson(existingPerson)
@@ -51,7 +49,7 @@ const App = () => {
           clearForm()
         })
         .catch((e) => {
-          notifyWith(`Information of ${existingPerson.name} has already been removed from server`, true)
+          notifyWith(`Update unsuccessful.`, true)
           clearForm()
           setPersons(persons.filter(person => person.id !== existingPerson.id))
         })

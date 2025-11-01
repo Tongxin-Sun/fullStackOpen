@@ -7,6 +7,16 @@ morgan.token('body', (req) => JSON.stringify(req.body))
 
 const app = express()
 
+const errorHandler = (error, request, response, next) => {
+    console.log(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 app.use(express.static('dist'))
@@ -62,10 +72,13 @@ app.get('/info', (request, response) => {
     )
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+    Person.findByIdAndDelete(id)
+        .then(deletedPerson => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -81,11 +94,28 @@ app.post('/api/persons', (request, response) => {
     person.save().then(savedPerson => response.json(savedPerson))
 })
 
+app.put('/api/persons/:id', (request, response) => {
+    const body = request.body
+
+    bodyRequiredFieldErrorHandler(['name', 'number'], body, response)
+
+    Person.updateOne({ _id: request.params.id, name: body.name }, { $set: { number: body.number } })
+        .then(() => response.json(
+            {
+                name: body.name,
+                number: body.number
+            }
+        ))
+
+
+})
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

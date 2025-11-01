@@ -1,0 +1,4 @@
+DELETE http://localhost:3001/api/persons/6902a67885d1d369e68ce486
+
+###Invalid id Cast Error
+DELETE http://localhost:3001/api/persons/1
