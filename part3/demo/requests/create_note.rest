@@ -14,3 +14,11 @@ Content-Type: application/json
     "content": "#5 note",
     "important": true
 }
+### content is less than 5 characters
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "H",
+    "important": false
+}

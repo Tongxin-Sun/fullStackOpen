@@ -17,7 +17,12 @@ const App = () => {
 
   const addPerson = (e) => {
     e.preventDefault()
-    const existingPerson = persons.find((person) => person.name === newName.trim())
+
+    // Make sure that the new name is trimmed off the white space at the end
+    const newNameTrimmed = newName.trim()
+    setNewName(newNameTrimmed)
+
+    const existingPerson = persons.find((person) => person.name === newNameTrimmed)
 
     if (existingPerson) {
       updatePerson(existingPerson)
@@ -25,16 +30,21 @@ const App = () => {
     }
 
     personService
-      .create({ name: newName, number: newNumber })
+      .create({ name: newNameTrimmed, number: newNumber })
       .then(createdPerson => {
         setPersons(persons.concat(createdPerson))
         notifyWith(`Added ${createdPerson.name}`)
         clearForm()
       })
+      .catch(error => {
+        console.log(error.response.data.error)
+        notifyWith(error.response.data.error, true)
+        clearForm()
+      })
   }
 
   const updatePerson = (existingPerson) => {
-    const confirmUpdate = confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+    const confirmUpdate = confirm(`${newName.trim()} is already added to phonebook, replace the old number with a new one?`)
 
     if (confirmUpdate) {
       personService
@@ -45,7 +55,7 @@ const App = () => {
               person.id === existingPerson.id ? updatedPerson : person
             )
           )
-          notifyWith(`Phonenumber of ${updatedPerson.name} updated!`)
+          notifyWith(`Phone number of ${updatedPerson.name} updated!`)
           clearForm()
         })
         .catch((e) => {
