@@ -6,7 +6,8 @@ const url = process.env.MONGODB_URI
 
 console.log('connecting to', url)
 
-mongoose.connect(url)
+mongoose
+  .connect(url)
   .then(() => {
     console.log('connected to MongoDB')
   })
@@ -17,18 +18,19 @@ mongoose.connect(url)
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 3
+    minLength: 3,
+    required: true,
+    unique: true
   },
   number: {
     type: String,
     minLength: 8,
+    required: true,
     validate: {
-      validator: function (v) {
-        return /^\d{2,3}-\d+$/.test(v)
-      },
-      message: props => `${props.value} is not a valid phone number!`
+      validator: v => /^\d{2,3}-\d+$/.test(v),
+      message: () => 'The phone number must be at least 8 characters long and must contain a hythen after the second or third digit (e.g., 040-6655678).'
     }
-  },
+  }
 })
 
 personSchema.set('toJSON', {

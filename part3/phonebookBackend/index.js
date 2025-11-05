@@ -3,8 +3,6 @@ const express = require('express')
 const morgan = require('morgan')
 const Person = require('./models/person')
 
-morgan.token('body', (req) => JSON.stringify(req.body))
-
 const app = express()
 
 const errorHandler = (error, request, response, next) => {
@@ -19,38 +17,37 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+morgan.token('body', (req) => JSON.stringify(req.body))
+
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-app.use(express.static('dist'))
-
-// Helpers
-const bodyRequiredFieldErrorHandler = (requiredFields, body, response) => {
-  const missingFields = requiredFields.filter(field => !body[field])
-  if (missingFields.length > 0) {
-    return response.status(400).json({
-      error: `Missing required field(s): ${missingFields.join(',')}`
-    })
-  }
-}
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => response.json(persons))
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => response.json(person))
-
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response) => {
-  const current = new Date()
-  Person.find({})
-    .then(persons =>
-      response.send(
-        `<p>Phonebook has info for ${persons.length} people</p>
-         <p>${current}</p>`
-      )
-    )
+  const date = new Date().toString()
+  Person.countDocuments({}).then(count => {
+    const html = `
+        <p>Phonebook has info for ${count} people</p>
+         <p>${date}</p>
+         `
+    response.send(html)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -63,13 +60,11 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.post('/api/persons', (request, response, next) => {
-  const body = request.body
-
-  bodyRequiredFieldErrorHandler(['name', 'number'], body, response)
+  const { name, number } = request.body
 
   const person = new Person({
-    name: body.name,
-    number: body.number
+    name,
+    number
   })
 
   person.save()
@@ -77,20 +72,24 @@ app.post('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, response) => {
-  const body = request.body
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
 
-  bodyRequiredFieldErrorHandler(['name', 'number'], body, response)
-  const opts = { runValidators: true }
-  Person.updateOne({ _id: request.params.id, name: body.name }, { $set: { number: body.number } }, opts)
-    .then(() => response.json(
-      {
-        name: body.name,
-        number: body.number
+  Person.findById(request.params.id)
+    .then(person => {
+      console.log(person)
+      if (!person) {
+        response.status(404).end()
       }
-    ))
 
+      person.name = name
+      person.number = number
 
+      return person.save().then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -100,7 +99,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 app.use(errorHandler)
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

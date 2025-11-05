@@ -43,7 +43,7 @@ const App = () => {
       })
   }
 
-  const updatePerson = (existingPerson) => {
+  const updatePerson = existingPerson => {
     const confirmUpdate = confirm(`${newName.trim()} is already added to phonebook, replace the old number with a new one?`)
 
     if (confirmUpdate) {
@@ -58,10 +58,17 @@ const App = () => {
           notifyWith(`Phone number of ${updatedPerson.name} updated!`)
           clearForm()
         })
-        .catch((e) => {
-          notifyWith(`Update unsuccessful.`, true)
-          clearForm()
-          setPersons(persons.filter(person => person.id !== existingPerson.id))
+        .catch(error => {
+          if (error.status === 400) {
+            notifyWith(error.response.data.error, true)
+          } else if (error.status === 404) {
+            notifyWith(
+              `Information of ${existingPerson.name} has already been removed from server`,
+              true
+            )
+
+          }
+          setPersons(persons.filter(person => person.name !== existingPerson.name))
         })
     }
   }
