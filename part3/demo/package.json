@@ -12,7 +12,7 @@
     "start": "node index.js",
     "lint": "eslint .",
     "build:ui": "rm -rf dist && cd ../../introdemo && npm run build && cp -r dist ../part3/demo",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && cd ../.. && git add . && git commit -m uibuild && git push"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
