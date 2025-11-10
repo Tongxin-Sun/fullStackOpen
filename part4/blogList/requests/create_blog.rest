@@ -1,0 +1,10 @@
+# Create a new blog record successfully.
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "The AI Bubble Is About To Burst, But The Next Bubble Is Already Growing",
+  "author": "Will Lockett",
+  "url": "https://medium.com/@wlockett/the-ai-bubble-is-about-to-burst-but-the-next-bubble-is-already-growing-383c0c0c7ede",
+  "likes": 16300
+}
