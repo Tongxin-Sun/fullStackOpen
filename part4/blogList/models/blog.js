@@ -8,7 +8,7 @@ const blogSchema = mongoose.Schema({
 })
 
 // Customize how Mongoose documents are converted to JSON (e.g. modify, remove, or rename fields)
-blogSchema.set('toJSON', {
+{/*blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     // Use toString because _id is an object under the hood
     // although it looks like a string when we console.log it
@@ -16,6 +16,6 @@ blogSchema.set('toJSON', {
     delete returnedObject._id
     delete returnedObject.__v
   }
-})
+})*/}
 
 module.exports = mongoose.model('Blog', blogSchema)
