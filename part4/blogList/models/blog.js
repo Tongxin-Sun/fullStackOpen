@@ -1,14 +1,25 @@
 const mongoose = require('mongoose')
 
 const blogSchema = mongoose.Schema({
-  title: String,
+  title: {
+    type: String,
+    required: true,
+  },
   author: String,
-  url: String,
-  likes: Number,
+  url: {
+    type: String,
+    required: true,
+  },
+  likes: {
+    type: Number,
+    default: 0,
+  },
 })
 
 // Customize how Mongoose documents are converted to JSON (e.g. modify, remove, or rename fields)
-{/*blogSchema.set('toJSON', {
+// It only affects what will be sent to the frontend. It won't affect what will be sent from database to the backend.
+// In other words, this will be run only when we call methods such as response.json(blogs).
+blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     // Use toString because _id is an object under the hood
     // although it looks like a string when we console.log it
@@ -16,6 +27,6 @@ const blogSchema = mongoose.Schema({
     delete returnedObject._id
     delete returnedObject.__v
   }
-})*/}
+})
 
 module.exports = mongoose.model('Blog', blogSchema)

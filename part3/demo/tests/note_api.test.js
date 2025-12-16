@@ -10,7 +10,7 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Note.deleteMany({})
-  await Note.insertMany(helper.initialNotes)ß
+  await Note.insertMany(helper.initialNotes)
 })
 
 test('notes are returned as json', async () => {

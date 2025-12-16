@@ -10,6 +10,8 @@ const app = express()
 
 logger.info('connecting to', config.MONGODB_URI)
 
+// We don't need to close the connection explicitly,
+// because the connection only needs to close when the process/app exits (i.e., when the node shutdown).
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
