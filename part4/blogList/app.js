@@ -22,9 +22,9 @@ mongoose
   })
 
 // Request preprocessing
-morgan.token('body', (req) => JSON.stringify(req.body))
+//morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(express.json())
-app.use(morgan(' :method :url :status :res[content-length] - :response-time ms :body'))
+//app.use(morgan(' :method :url :status :res[content-length] - :response-time ms :body'))
 
 // Blogs API handler
 app.use('/api/blogs', blogsRouter)
