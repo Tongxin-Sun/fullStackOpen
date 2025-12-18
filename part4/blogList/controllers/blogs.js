@@ -1,22 +1,34 @@
-const BlogsRouter = require('express').Router()
+const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-BlogsRouter.get('/', async (request, response) => {
+blogsRouter.get('/', async (request, response) => {
   // Blog.find() returns a Promise that resolves to an array of Mongoose documents (blogs)
   const blogs = await Blog.find({})
   response.json(blogs)
 })
 
-BlogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
 
   const newBlog = await blog.save()
   response.status(201).json(newBlog)
 })
 
-BlogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', async (request, response) => {
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).send()
 })
 
-module.exports = BlogsRouter
+blogsRouter.put('/:id', async (request, response) => {
+  const { likes } = request.body
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).end()
+  }
+  blog.likes = likes
+  const updatedBlog = await blog.save()
+  response.json(updatedBlog)
+})
+
+module.exports = blogsRouter
