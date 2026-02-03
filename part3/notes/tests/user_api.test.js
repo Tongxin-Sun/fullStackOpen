@@ -21,7 +21,6 @@ describe('when there is initially one user in db', () => {
 
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()
-    console.log(usersAtStart)
 
     const newUser = {
       username: 'mluukkai',
@@ -36,7 +35,6 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
-    console.log(usersAtEnd)
     assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
 
     const usernames = usersAtEnd.map(user => user.username)
