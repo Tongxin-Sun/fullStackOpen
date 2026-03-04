@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
 const middleware = require('./utils/middleware')
-const morgan = require('morgan')
+//const morgan = require('morgan')
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use(express.json())
 
 // Blogs API handler
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
 
 // Request postprocessing
 app.use(middleware.unknownEndpoint)

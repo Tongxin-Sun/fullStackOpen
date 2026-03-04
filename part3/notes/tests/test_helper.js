@@ -30,4 +30,10 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
-module.exports = { initialNotes, notesInDb, nonExistingId, usersInDb }
+module.exports = {
+  initialNotes,
+  initialUsers,
+  notesInDb,
+  nonExistingId,
+  usersInDb
+}
