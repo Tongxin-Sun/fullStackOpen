@@ -28,7 +28,6 @@ notesRouter.get('/:id', async (request, response) => {
 
 notesRouter.post('/', async (request, response) => {
   const body = request.body
-  console.log(getTokenFrom(request))
   const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   console.log(`decodedToken: ${decodedToken.id}`)
   if (!decodedToken.id) {

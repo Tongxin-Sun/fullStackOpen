@@ -14,59 +14,9 @@ describe('when there is initially one user in db', () => {
     await User.deleteMany({})
 
     const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash: passwordHash })
+    const user = new User({ username: 'root', name: 'first last', passwordHash: passwordHash })
 
     await user.save()
-  })
-
-  test('creation succeeds with a fresh username', async () => {
-    const usersAtStart = await helper.usersInDb()
-
-    const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
-      password: 'salainen'
-    }
-
-    await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const usersAtEnd = await helper.usersInDb()
-    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
-
-    const usernames = usersAtEnd.map(u => u.username)
-    assert(usernames.includes(newUser.username))
-  })
-
-  test('creation fails with proper statuscode and message if username already taken', async () => {
-    const usersAtStart = await helper.usersInDb()
-
-    const newUser = {
-      username: 'root',
-      name: 'Superuser',
-      password: 'salainen',
-    }
-
-    const result = await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-
-    const usersAtEnd = await helper.usersInDb()
-    assert(result.body.error.includes('expected `username` to be unique'))
-
-    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
-  })
-})
-
-describe('when there is initially some users saved', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await User.insertMany(helper.initialUsers)
   })
 
   test('users are returned as json', async () => {
@@ -78,7 +28,7 @@ describe('when there is initially some users saved', () => {
 
   test('all users are returned', async () => {
     const response = await api.get('/api/users')
-    assert.strictEqual(response.body.length, helper.initialUsers.length)
+    assert.strictEqual(response.body.length, 1)
   })
 
   test('a specific user is within the returned users', async () => {
@@ -86,8 +36,95 @@ describe('when there is initially some users saved', () => {
 
     const usernames = response.body.map(e => e.username)
     const names = response.body.map(e => e.name)
-    assert(usernames.includes('user2'))
-    assert(names.includes('admin last'))
+    assert(usernames.includes('root'))
+    assert(names.includes('first last'))
+  })
+
+  describe('addition of a new user', () => {
+    test('creation succeeds with a fresh username', async () => {
+      const usersAtStart = await helper.usersInDb()
+
+      const newUser = {
+        username: 'mluukkai',
+        name: 'Matti Luukkainen',
+        password: 'salainen'
+      }
+
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAtEnd = await helper.usersInDb()
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+      const usernames = usersAtEnd.map(u => u.username)
+      assert(usernames.includes(newUser.username))
+    })
+
+    test('creation fails with proper statuscode and message if username already taken', async () => {
+      const usersAtStart = await helper.usersInDb()
+
+      const newUser = {
+        username: 'root',
+        name: 'Superuser',
+        password: 'password123',
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('expected `username` to be unique'))
+
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
+    test('fails with missing username with status code 400 and proper error message', async () => {
+      const usersAtStart = await helper.usersInDb()
+
+      const newUser = {
+        name: 'John Watson',
+        password: 'random',
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('username: Path `username` is required.'))
+
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
+    test('fails with missing password with status code 400 and proper error message', async () => {
+      const usersAtStart = await helper.usersInDb()
+
+      const newUser = {
+        username: 'newuser',
+        name: 'John Watson'
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('password must be at least 3 characters long'))
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
+    test('fails with username less than 3 characters', async () => { })
+    //test('fails with password less than 3 characters', () => { })
   })
 })
 
