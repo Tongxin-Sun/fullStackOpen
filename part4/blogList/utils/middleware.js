@@ -10,7 +10,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: 'expected `username` to be unique' })
   } else if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({
-      error: 'invalid token'
+      error: 'invalid tokenm'
     })
   } else if (error.name === 'TokenexpiredError') {
     return response.status(401).json({
@@ -22,8 +22,17 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  }
+
+  next()
+}
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
-module.exports = { errorHandler, unknownEndpoint }
+module.exports = { errorHandler, unknownEndpoint, tokenExtractor }
