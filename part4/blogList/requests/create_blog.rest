@@ -1,6 +1,7 @@
 # Create a new blog record successfully.
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImlkIjoiNjlhODlhNDdjYmY1MzMzN2IzZGJjOWMxIiwiaWF0IjoxNzczOTQ1NjczfQ.cOhVU_n2z97I-iCswyjAgElcmZ-BYnbPEgMnakt5pac
 
 {
   "title": "The AI Bubble Is About To Burst, But The Next Bubble Is Already Growing",
