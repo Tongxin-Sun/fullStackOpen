@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const loginRouter = require('express').Router()
 const User = require('../models/user')
-const { response } = require('express')
 
 // When a user signs in, the browser sends a post request to /api/login
 // with his/her username and password.
