@@ -1,10 +1,11 @@
 # Create a new blog record successfully.
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImlkIjoiNjlhODlhNDdjYmY1MzMzN2IzZGJjOWMxIiwiaWF0IjoxNzc0Mzk0MjI4LCJleHAiOjE3NzQzOTc4Mjh9.oxvz6pl9uFlv0rM_C7OWPpJl1jCCn8TKVCHrXh_8VJ8Authorization: Bearer 
 
 {
-  "title": "The AI Bubble Is About To Burst, But The Next Bubble Is Already Growing",
-  "author": "Will Lockett",
-  "url": "https://medium.com/@wlockett/the-ai-bubble-is-about-to-burst-but-the-next-bubble-is-already-growing-383c0c0c7ede",
-  "likes": 16300
+  "title": "Understanding JavaScript Closures",
+  "author": "Alice Johnson",
+  "url": "https://example.com/js-closures",
+  "likes": 12
 }

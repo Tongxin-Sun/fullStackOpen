@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const userExtractor = require('../utils/middleware').userExtractor
 
 blogsRouter.get('/', async (request, response) => {
   // Blog.find() returns a Promise that resolves to an array of Mongoose documents (blogs)
@@ -10,13 +9,13 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
+  //const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  /*if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+  }*/
+  const user = request.user
 
   if (!user) {
     return response.status(400).json({ error: 'userId missing or not valid' })
@@ -37,10 +36,10 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(newBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
   const blog = await Blog.findById(request.params.id)
-  if (decodedToken.id !== blog.user.toString()) {
+  if (user.id !== blog.user.toString()) {
     return response.status(401).json({ error: 'user not authorized to delete this blog' })
   }
   await Blog.findByIdAndDelete(request.params.id)
