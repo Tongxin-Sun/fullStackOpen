@@ -10,24 +10,27 @@ const middleware = require('./utils/middleware')
 
 const app = express()
 
-logger.info('connecting to', config.MONGODB_URI)
+//logger.info('connecting to', config.MONGODB_URI)
 
 // We don't need to close the connection explicitly,
 // because the connection only needs to close when the process/app exits (i.e., when the node shutdown).
-mongoose
-  .connect(config.MONGODB_URI)
-  .then(() => {
+const connectToMongo = async () => {
+  try {
+    // For debugging, use `await mongoose.connect(config.MONGODB_URI, { debug: true })`
+    await mongoose.connect(config.MONGODB_URI)
     logger.info('connected to MongoDB')
-  })
-  .catch(error => {
+  } catch (error) {
     logger.error('error connecting to MongoDB: ', error.message)
-  })
+  }
+}
+
+connectToMongo()
 
 // Request preprocessing
 //morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(express.json())
 //app.use(morgan(' :method :url :status :res[content-length] - :response-time ms :body'))
-
+app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
 // Blogs API handler

@@ -1,6 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const userExtractor = require('../utils/middleware').userExtractor
+const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   // Blog.find() returns a Promise that resolves to an array of Mongoose documents (blogs)
@@ -10,27 +10,13 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', userExtractor, async (request, response) => {
-  const body = request.body
-  //const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  /*if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }*/
   const user = request.user
+  const blog = new Blog(request.body)
 
-  if (!user) {
-    return response.status(400).json({ error: 'userId missing or not valid' })
-  }
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  })
+  blog.user = user._id
 
   const newBlog = await blog.save()
-  user.blogs = user.blogs.concat(newBlog._id)
+  user.blogs = user.blogs.concat(blog._id)
   await user.save()
 
   response.status(201).json(newBlog)
@@ -39,21 +25,35 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   const user = request.user
   const blog = await Blog.findById(request.params.id)
-  if (user.id !== blog.user.toString()) {
-    return response.status(401).json({ error: 'user not authorized to delete this blog' })
+
+  if (!blog) {
+    return response.status(204).end()
   }
-  await Blog.findByIdAndDelete(request.params.id)
+
+  // Status code 403: Forbidden
+  if (user.id.toString() !== blog.user.toString()) {
+    return response.status(403).json({ error: 'user not authorized to delete this blog' })
+  }
+
+  user.blogs = user.blogs.filter(blogId => blogId.toString() !== blog.id.toString())
+  await user.save()
+  await blog.deleteOne()
   response.status(204).send()
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const { likes } = request.body
+  const { title, author, url, likes } = request.body
 
   const blog = await Blog.findById(request.params.id)
   if (!blog) {
     return response.status(404).end()
   }
+
+  blog.title = title
+  blog.author = author
+  blog.url = url
   blog.likes = likes
+
   const updatedBlog = await blog.save()
   response.json(updatedBlog)
 })

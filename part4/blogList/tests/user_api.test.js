@@ -9,7 +9,7 @@ const app = require('../app')
 
 const api = supertest(app)
 
-describe('when there is initially one user in db', () => {
+describe('users', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
@@ -59,8 +59,10 @@ describe('when there is initially one user in db', () => {
       const usersAtEnd = await helper.usersInDb()
       assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
 
-      const usernames = usersAtEnd.map(u => u.username)
-      assert(usernames.includes(newUser.username))
+      const createdUser = usersAtEnd.find(u => u.username === newUser.username)
+      assert.ok(createdUser, 'User should exist in the database')
+      assert.strictEqual(createdUser.username, newUser.username)
+      assert.strictEqual(createdUser.name, newUser.name)
     })
 
     test('creation fails with proper statuscode and message if username already taken', async () => {
@@ -99,8 +101,7 @@ describe('when there is initially one user in db', () => {
         .expect('Content-Type', /application\/json/)
 
       const usersAtEnd = await helper.usersInDb()
-      assert(result.body.error.includes('username: Path `username` is required.'))
-
+      assert.ok(result.body.error.includes('username: Path `username` is required.'))
       assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
 
@@ -123,8 +124,25 @@ describe('when there is initially one user in db', () => {
       assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
 
-    test('fails with username less than 3 characters', async () => { })
-    //test('fails with password less than 3 characters', () => { })
+    test('fails with username 2 characters', async () => {
+      const newUser = {
+        username: 'newuser',
+        name: 'New User',
+        password: 'pw'
+      }
+
+      const usersAtStart = await helper.usersInDb()
+
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAtEnd = await helper.usersInDb()
+
+      assert.strictEqual(usersAtStart.length, usersAtEnd.length)
+    })
   })
 })
 
