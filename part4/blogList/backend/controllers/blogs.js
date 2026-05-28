@@ -29,7 +29,6 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   if (!blog) {
     return response.status(204).end()
   }
-
   // Status code 403: Forbidden
   if (user.id.toString() !== blog.user.toString()) {
     return response.status(403).json({ error: 'user not authorized to delete this blog' })

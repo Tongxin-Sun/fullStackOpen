@@ -56,6 +56,20 @@ const App = () => {
     await blogService.update(updatedBlog, blogId)
   }
 
+  const remove = async blogToBeRemoved => {
+    try {
+      if (window.confirm(`Remove blog ${blogToBeRemoved.title} by ${blogToBeRemoved.author}`)) {
+        await blogService.deleteBlog(blogToBeRemoved.id)
+        setBlogs(blogs.filter(blog => blog.id !== blogToBeRemoved.id))
+      }
+    } catch (error) {
+      setErrorMessage(error.message)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const handleLogin = async event => {
     event.preventDefault()
     try {
@@ -140,8 +154,12 @@ const App = () => {
       )}
 
 
-      {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} update={update} />
+      {/*{[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog key={blog.id} blog={blog} user={user} update={update} remove={remove} />
+      )}*/}
+
+      {blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} user={user} update={update} remove={remove} />
       )}
     </div>
   )

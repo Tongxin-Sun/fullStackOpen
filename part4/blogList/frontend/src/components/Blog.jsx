@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog, update }) => {
+const Blog = ({ blog, user, update, remove }) => {
   const [showAll, setShowAll] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
   const hide = { display: showAll ? '' : 'none' }
@@ -14,8 +14,7 @@ const Blog = ({ blog, update }) => {
     marginBottom: 5
   }
 
-  const updateLike = async (event, blog) => {
-    event.preventDefault()
+  const updateLike = async blog => {
     const userId = JSON.parse(window.localStorage.getItem('loggedBloglistUser')).id
     await update({
       user: userId,
@@ -32,8 +31,9 @@ const Blog = ({ blog, update }) => {
       {blog.title} <button onClick={() => setShowAll(!showAll)}>{label}</button>
       <div style={hide}>
         <div>{blog.url}</div>
-        <div>likes {likes} <button onClick={(event) => updateLike(event, blog)}>like</button></div>
+        <div>likes {likes} <button onClick={() => updateLike(blog)}>like</button></div>
         <div>{blog.author}</div>
+        {user.id === blog.user.id && <button onClick={() => remove(blog)}>remove</button>}
       </div>
     </div>
   )
